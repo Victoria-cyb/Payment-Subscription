@@ -8,12 +8,12 @@
        ],
        "routes": [
          {
-           "src": "/(css|js)/.*",
-           "destination": "/$0"
+           "src": "/(css|js|mp4)/.*",
+           "dest": "/$0"
          },
-          {
-            "src": "/(.*)",
-            "destination": "/index.html"
-          }
+         {
+           "src": "/(.*)",
+           "dest": "/index.html"
+         }
        ]
      }
