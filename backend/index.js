@@ -88,14 +88,7 @@ const server = new ApolloServer({
     }
   });
 
-  // Vercel serverless handler
-  module.exports = async (req, res) => {
-    if (req.url === '/' && req.method === 'GET') {
-      res.status(200).json({ message: 'WIPE AND SHINE Backend API' });
-      return;
-    }
-    // You can add more serverless logic here if needed
-  };
+  
 
   const PORT = process.env.PORT || 3001;
   httpServer.listen(PORT, () => {
