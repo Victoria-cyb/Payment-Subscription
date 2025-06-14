@@ -2,14 +2,18 @@
        "version": 2,
        "builds": [
          {
-           "src": "*.html",
+           "src": "**/*",
            "use": "@vercel/static"
          }
        ],
-       "rewrites": [
+       "routes": [
          {
-           "source": "/(.*)",
-           "destination": "/index.html"
-         }
+           "source": "/(css|js)/.*",
+           "destination": "/$0"
+         },
+          {
+            "source": "/(.*)",
+            "destination": "/index.html"
+          }
        ]
      }
