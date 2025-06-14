@@ -8,11 +8,11 @@
        ],
        "routes": [
          {
-           "source": "/(css|js)/.*",
+           "src": "/(css|js)/.*",
            "destination": "/$0"
          },
           {
-            "source": "/(.*)",
+            "src": "/(.*)",
             "destination": "/index.html"
           }
        ]
