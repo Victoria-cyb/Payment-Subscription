@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WIPE AND SHINE App</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+  <video autoplay muted loop playsinline id="background-video">
+    <source src="background-video.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="overlay"></div>
+  <div class="content-wrapper">
+    <header>
+      <h1>WIPE AND SHINE App</h1>
+      <div class="auth-container">
+        <span id="authStatus"></span>
+        <button id="logoutButton" class="btn btn-logout" style="display: none;">Logout</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Signup Form -->
+      <section class="form-container" id="signupSection">
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+          <input type="text" id="signupFirstName" placeholder="First Name" required>
+          <input type="text" id="signupLastName" placeholder="Last Name" required>
+          <input type="email" id="signupEmail" placeholder="Email" required>
+          <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" required>
+          <select id="signupRole" required>
+            <option value="">Select Role</option>
+            <option value="client">Client</option>
+            <option value="cleaner">Cleaner</option>
+          </select>
+          <input type="text" id="signupAddress" placeholder="Address (e.g., Lagos, Nigeria)" required>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+      </section>
+
+      <!-- Login Form -->
+      <section class="form-container" id="loginSection">
+        <h2>Log In</h2>
+        <form id="loginForm">
+          <input type="email" id="loginEmail" placeholder="Email" required>
+          <input type="password" id="loginPassword" placeholder="Password" required>
+          <button type="submit" class="btn btn-primary">Log In</button>
+        </form>
+      </section>
+
+      <!-- User Profile -->
+      <section class="form-container" id="userProfileSection" style="display: none;">
+        <h2>User Profile</h2>
+        <div id="userProfile"></div>
+        <button id="fetchUser" class="btn btn-secondary">Refresh Profile</button>
+      </section>
+
+      <!-- Payment Form -->
+      <section class="form-container" id="paymentSection" style="display: none;">
+        <h2>Make a One-Time Payment</h2>
+        <form id="paymentForm">
+          <input type="number" id="paymentAmount" placeholder="Amount (NGN)" required min="100">
+          <button type="submit" class="btn btn-primary pulse">Pay Now</button>
+        </form>
+      </section>
+
+      <!-- Subscription Form -->
+      <section class="form-container" id="subscriptionSection" style="display: none;">
+        <h2>Start a Subscription</h2>
+        <form id="subscriptionForm">
+          <input type="number" id="subscriptionAmount" placeholder="Amount (NGN)" required min="100">
+          <select id="subscriptionInterval" required>
+            <option value="">Select Interval</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="annually">Annually</option>
+          </select>
+          <button type="submit" class="btn btn-primary pulse">Subscribe</button>
+        </form>
+      </section>
+
+      <!-- Verify Payment -->
+      <section class="form-container" id="verifySection" style="display: none;">
+        <h2>Verify Payment</h2>
+        <form id="verifyForm">
+          <input type="text" id="verifyReference" placeholder="Transaction Reference" required>
+          <button type="submit" class="btn btn-primary">Verify</button>
+        </form>
+      </section>
+
+      <!-- Cleaner Selection -->
+      <section class="form-container" id="cleanerSelection" style="display: none;">
+        <h2>Select a Cleaner</h2>
+        <ul id="cleanerList" class="cleaner-list"></ul>
+      </section>
+
+      <!-- Job List for Cleaners -->
+      <section class="form-container" id="jobListSection" style="display: none;">
+        <h2>Available Jobs</h2>
+        <ul id="jobList" class="job-list"></ul>
+        <button id="fetchJobsBtn" class="btn btn-secondary">Refresh Jobs</button>
+      </section>
+
+      <!-- Transaction Status -->
+      <section class="form-container" id="transactionStatus" style="display: none;">
+        <h2>Transaction Status</h2>
+        <ul id="transactionList" class="transaction-list"></ul>
+      </section>
+
+      <!-- Transactions -->
+      <section class="form-container" id="transactionsSection" style="display: none;">
+        <h2>Your Transactions</h2>
+        <form id="transactionByReferenceForm">
+          <input type="text" id="transactionReference" placeholder="Transaction Reference" required>
+          <button type="submit" class="btn btn-primary">Find Transaction</button>
+        </form>
+        <button id="fetchTransactions" class="btn btn-secondary">Fetch All Transactions</button>
+      </section>
+
+      <!-- Result -->
+      <div id="result" class="result-message"></div>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
