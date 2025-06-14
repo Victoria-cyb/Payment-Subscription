@@ -1,4 +1,5 @@
-const backendUrl = 'http://localhost:3001/graphql';
+const backendUrl = 'https://paystack-integration-lemon.vercel.app/graphql';
+const PAYSTACK_PUBLIC_KEY = 'pk_test_ded59deb8c890c4512e9c678cfcf8f8e7e088ccc';
 const resultDiv = document.getElementById('result');
 const transactionList = document.getElementById('transactionList');
 const authStatus = document.getElementById('authStatus');
