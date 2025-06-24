@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - WIPE AND SHINE</title>
+  <link rel="stylesheet" href="./style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <video autoplay muted loop playsinline id="background-video">
+    <source src="background-video.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <div class="content-wrapper">
+    <header>
+      <h1>WIPE AND SHINE CLEANING AGENCY</h1>
+      <nav>
+        <a href="login.html">Log In</a>
+        <a href="index.html">Home</a>
+      </nav>
+    </header>
+    <main>
+      <section class="form-container" id="signupSection">
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+          <input type="text" id="signupFirstName" placeholder="First Name" required>
+          <input type="text" id="signupLastName" placeholder="Last Name" required>
+          <input type="email" id="signupEmail" placeholder="Email" required>
+          <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" required>
+          <select id="signupRole" required>
+            <option value="">Select Role</option>
+            <option value="client">Client</option>
+            <option value="cleaner">Cleaner</option>
+          </select>
+          <input type="text" id="signupAddress" placeholder="Address (e.g., Lagos, Nigeria)" required>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+      </section>
+      <div id="result" class="result-message"></div>
+    </main>
+  </div>
+  <script src="./script.js"></script>
+</body>
+</html>

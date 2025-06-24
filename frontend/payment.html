@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One-Time Payment - WIPE AND SHINE</title>
+  <link rel="stylesheet" href="./style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+  <video autoplay muted loop playsinline id="background-video">
+    <source src="background-video.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <div class="content-wrapper">
+    <header>
+      <h1>WIPE AND SHINE CLEANING AGENCY</h1>
+      <div class="auth-container">
+        <span id="authStatus"></span>
+        <button id="logoutButton" class="btn btn-logout" style="display: none;">Logout</button>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="subscription.html">Subscription</a>
+      </nav>
+    </header>
+    <main>
+      <section class="form-container" id="paymentSection">
+        <h2>One-Time Payment</h2>
+        <form id="paymentDetailsForm">
+          <input type="text" id="paymentAddress" placeholder="Address (e.g., Lagos, Nigeria)" required>
+          <input type="tel" id="paymentPhone" placeholder="Phone Number (e.g., +2341234567890)" required>
+          <input type="text" id="paymentCompany" placeholder="Company Name (optional)">
+          <input type="number" id="paymentAmount" placeholder="Amount (NGN)" required min="100">
+          <button type="submit" class="btn btn-primary pulse">Proceed to Pay</button>
+        </form>
+      </section>
+      <div id="result" class="result-message"></div>
+    </main>
+  </div>
+  <script src="./script.js"></script>
+</body>
+</html>

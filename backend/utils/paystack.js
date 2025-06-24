@@ -70,7 +70,7 @@ const paystack = {
   },
 
   async createPlan(amount, interval = 'monthly', name) {
-    const VALID_INTERVALS = ['daily', 'weekly', 'monthly', 'annually'];
+    const VALID_INTERVALS = ['weekly', 'monthly', 'annually'];
     if (!VALID_INTERVALS.includes(interval)) {
       throw new Error('Invalid interval selected. Allowed values: daily, weekly, monthly, annually.');
     }

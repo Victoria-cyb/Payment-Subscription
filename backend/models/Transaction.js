@@ -6,9 +6,15 @@ const transactionSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   status: { type: String, required: true },
   type: { type: String, enum: ['one-time', 'subscription'], required: true },
-   interval: { type: String, enum: ['daily', 'weekly', 'monthly', 'annually'], required: false },
+  interval: { type: String, enum: ['weekly', 'monthly', 'annually'], required: false },
   planCode: { type: String },
   createdAt: { type: Date, default: Date.now },
+  address: { type: String },
+  phone: { type: String },
+  company: { type: String },
+  houseAddress: { type: String },
+  houseType: { type: String },
+  cleaningOptions: { type: String },
 });
 
 // Force ISO string for Date fields

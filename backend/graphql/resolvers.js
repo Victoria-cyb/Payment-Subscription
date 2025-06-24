@@ -6,6 +6,7 @@ const Transaction = require('../models/Transaction');
 const Job = require('../models/Jobs');
 const paystack = require('../utils/paystack');
 const authMiddleware = require('../middleware/auth');
+const { sendPaymentNotification } = require('../utils/email');
 
 // Haversine formula to calculate distance between two coordinates
 function haversineDistance(coord1, coord2) {
@@ -55,6 +56,12 @@ module.exports = {
             interval: txObject.interval,
             planCode: txObject.planCode,
             createdAt: txObject.createdAt instanceof Date ? txObject.createdAt.toISOString() : txObject.createdAt,
+            address: txObject.address,
+            phone: txObject.phone,
+            company: txObject.company,
+            houseAddress: txObject.houseAddress,
+            houseType: txObject.houseType,
+            cleaningOptions: txObject.cleaningOptions,
           };
         }).filter(tx => tx !== null);
         console.log('getTransactions: Transformed:', transformedTransactions);
@@ -68,8 +75,14 @@ module.exports = {
       try {
         const userId = await authMiddleware(context.req);
         console.log('getTransactionByReference: Fetching for user:', userId, 'reference:', reference);
-        const transaction = await Transaction.findOne({ reference, userId });
-        if (!transaction) throw new Error('Transaction not found');
+        const transaction = await Transaction.findOne({ 
+          reference: { $regex: `^${reference}$`, $options: 'i' }, 
+          userId 
+        });
+        if (!transaction) {
+          console.log('getTransactionByReference: No transaction found for reference:', reference, 'userId:', userId);
+          throw new Error('Transaction not found');
+        }
         const txObject = transaction.toObject();
         if (!txObject._id) {
           console.error('getTransactionByReference: Missing _id for transaction:', txObject);
@@ -84,6 +97,12 @@ module.exports = {
           interval: txObject.interval,
           planCode: txObject.planCode,
           createdAt: txObject.createdAt instanceof Date ? txObject.createdAt.toISOString() : txObject.createdAt,
+          address: txObject.address,
+          phone: txObject.phone,
+          company: txObject.company,
+          houseAddress: txObject.houseAddress,
+          houseType: txObject.houseType,
+          cleaningOptions: txObject.cleaningOptions,
         };
         console.log('getTransactionByReference: Transformed:', transformedTransaction);
         return transformedTransaction;
@@ -245,7 +264,7 @@ module.exports = {
         console.log('initializePayment: userId:', userId);
         const user = await User.findById(userId);
         if (!user) throw new Error('User not found');
-        const { amount, type } = input;
+        const { amount, type, address, phone, company } = input;
         const reference = `pay_${Date.now()}_${user._id}`;
         console.log('initializePayment: amount:', amount, 'reference:', reference);
         const response = await paystack.initializeTransaction(
@@ -262,6 +281,9 @@ module.exports = {
           amount,
           status: 'pending',
           type: type || 'one-time',
+          address,
+          phone,
+          company,
         });
         await newTransaction.save();
         console.log('initializePayment: Transaction saved:', newTransaction);
@@ -283,11 +305,11 @@ module.exports = {
         console.log('initializeSubscription: userId:', userId);
         const user = await User.findById(userId);
         if (!user) throw new Error('User not found');
-        const { amount, interval, type } = input;
+        const { amount, interval, type, houseAddress, houseType, cleaningOptions } = input;
         const reference = `sub_${Date.now()}_${user._id}`;
         console.log('initializeSubscription: amount:', amount, 'interval:', interval, 'reference:', reference);
 
-        const allowedIntervals = ['daily', 'weekly', 'monthly', 'annually'];
+        const allowedIntervals = ['weekly', 'monthly', 'annually'];
         const normalizedInterval = interval?.toLowerCase();
         if (!normalizedInterval || !allowedIntervals.includes(normalizedInterval)) {
           throw new Error('Invalid interval selected. Allowed values: daily, weekly, monthly, annually.');
@@ -317,6 +339,9 @@ module.exports = {
           type: type || 'subscription',
           interval: normalizedInterval,
           planCode: planResponse.plan_code,
+          houseAddress,
+          houseType,
+          cleaningOptions,
         });
         await newTransaction.save();
         console.log('initializeSubscription: Transaction saved:', newTransaction);
@@ -336,8 +361,14 @@ module.exports = {
       try {
         const userId = await authMiddleware(context.req);
         console.log('verifyPaymentTransaction: userId:', userId, 'reference:', reference);
-        const transaction = await Transaction.findOne({ reference, userId });
-        if (!transaction) throw new Error('Transaction not found');
+        const transaction = await Transaction.findOne({ 
+          reference: { $regex: `^${reference}$`, $options: 'i' }, 
+          userId 
+        });
+        if (!transaction) {
+          console.log('verifyPaymentTransaction: No transaction found for reference:', reference, 'userId:', userId);
+          throw new Error('Transaction not found');
+        }
 
         const paystackResponse = await paystack.verifyTransaction(reference);
         console.log('verifyPaymentTransaction: Paystack response:', paystackResponse);
@@ -369,6 +400,29 @@ module.exports = {
             status: 'open',
           });
           console.log('verifyPaymentTransaction: Job created:', job._id);
+
+          // Send payment notification email
+          try {
+            const txObject = transaction.toObject();
+            await sendPaymentNotification({
+              reference: txObject.reference,
+              amount: txObject.amount,
+              status: txObject.status,
+              type: txObject.type,
+              interval: txObject.interval,
+              planCode: txObject.planCode,
+              createdAt: txObject.createdAt,
+              address: txObject.address,
+              phone: txObject.phone,
+              company: txObject.company,
+              houseAddress: txObject.houseAddress,
+              houseType: txObject.houseType,
+              cleaningOptions: txObject.cleaningOptions,
+            });
+            console.log('verifyPaymentTransaction: Payment notification email sent to:', process.env.ADMIN_EMAIL);
+          } catch (emailError) {
+            console.error('verifyPaymentTransaction: Failed to send email:', emailError.message);
+          }
         }
 
         const txObject = transaction.toObject();
@@ -381,6 +435,12 @@ module.exports = {
           interval: txObject.interval,
           planCode: txObject.planCode,
           createdAt: txObject.createdAt instanceof Date ? txObject.createdAt.toISOString() : txObject.createdAt,
+          address: txObject.address,
+          phone: txObject.phone,
+          company: txObject.company,
+          houseAddress: txObject.houseAddress,
+          houseType: txObject.houseType,
+          cleaningOptions: txObject.cleaningOptions,
         };
       } catch (error) {
         console.error('verifyPaymentTransaction: Error:', error.message);

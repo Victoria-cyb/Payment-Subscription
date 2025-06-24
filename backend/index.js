@@ -22,11 +22,10 @@ const resolvers = require('./graphql/resolvers');
 const Transaction = require('./models/Transaction');
 const { User } = require('./models/User');
 const { Job } = require('./models/Jobs');
+const { sendPaymentNotification } = require('./utils/email');
 
 const app = express();
 const httpServer = http.createServer(app);
-
-connectDB();
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
@@ -39,60 +38,69 @@ const server = new ApolloServer({
 });
 
 (async () => {
-  await server.start();
+  try {
+    await connectDB(); // Wait for MongoDB connection
+    await server.start();
 
-  app.use(cors());
-  app.use(bodyParser.json());
+    app.use(cors());
+    app.use(bodyParser.json());
 
-  app.use('/graphql', expressMiddleware(server, {
-    context: async ({ req }) => ({ req }),
-  }));
+    app.use('/graphql', expressMiddleware(server, {
+      context: async ({ req }) => ({ req }),
+    }));
 
-  app.post('/webhook', async (req, res) => {
-    try {
-      const hash = crypto
-        .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
-        .update(JSON.stringify(req.body))
-        .digest('hex');
+    app.post('/webhook', async (req, res) => {
+      try {
+        const hash = crypto
+          .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
+          .update(JSON.stringify(req.body))
+          .digest('hex');
 
-      if (hash !== req.headers['x-paystack-signature']) {
-        return res.status(401).send('Invalid signature');
-      }
+        if (hash !== req.headers['x-paystack-signature']) {
+          return res.status(401).send('Invalid signature');
+        }
 
-      const event = req.body;
-      if (event.event === 'charge.success') {
-        const { reference } = event.data;
-        const transaction = await Transaction.findOne({ reference });
+        const event = req.body;
+        console.log('Webhook: Event received:', event.event);
+        if (event.event === 'charge.success' || event.event === 'subscription.create') {
+          const { reference } = event.data;
+          const transaction = await Transaction.findOne({ reference });
 
-        if (transaction) {
-          transaction.status = 'success';
-          await transaction.save();
+          if (transaction) {
+            transaction.status = 'success';
+            await transaction.save();
 
-          if (transaction.type === 'subscription') {
-            const user = await User.findById(transaction.userId);
-            user.subscription = {
-              planCode: event.data.plan?.plan_code,
-              authorizationCode: event.data.authorization.authorization_code,
-              status: 'active',
-              nextPaymentDate: new Date(event.data.next_payment_date),
-            };
-            await user.save();
+            if (transaction.type === 'subscription') {
+              const user = await User.findById(transaction.userId);
+              user.subscription = {
+                planCode: event.data.plan?.plan_code || transaction.planCode,
+                authorizationCode: event.data.authorization.authorization_code,
+                status: 'active',
+                nextPaymentDate: new Date(event.data.next_payment_date || Date.now()),
+              };
+              await user.save();
+            }
+
+            // Send email notification
+            await sendPaymentNotification(transaction);
+            console.log('Webhook: Email sent to admin');
           }
         }
+
+        res.status(200).send('Webhook received');
+      } catch (error) {
+        console.error('Webhook error:', error.message);
+        res.status(500).send('Webhook processing failed');
       }
+    });
 
-      res.status(200).send('Webhook received');
-    } catch (error) {
-      console.error('Webhook error:', error.message);
-      res.status(500).send('Webhook processing failed');
-    }
-  });
-
-  
-
-  const PORT = process.env.PORT || 3001;
-  httpServer.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`GraphQL endpoint at http://localhost:${PORT}/graphql`);
-  });
+    const PORT = process.env.PORT || 3001;
+    httpServer.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`GraphQL endpoint at http://localhost:${PORT}/graphql`);
+    });
+  } catch (error) {
+    console.error('Server startup error:', error.message);
+    process.exit(1);
+  }
 })();

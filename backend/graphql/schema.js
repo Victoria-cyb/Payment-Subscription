@@ -10,6 +10,12 @@ const typeDefs = (`
     interval: String
     planCode: String
     createdAt: String!
+    address: String
+    phone: String
+    company: String
+    houseAddress: String
+    houseType: String
+    cleaningOptions: String
   }
 
   type AuthPayload {
@@ -81,8 +87,19 @@ const typeDefs = (`
 
   input PaymentInput {
     amount: Float!
-    type: String
-    interval: String
+    type: String!
+    address: String
+    phone: String
+    company: String
+  }
+
+  input SubscriptionInput {
+    amount: Float!
+    type: String!
+    interval: String!
+    houseAddress: String
+    houseType: String
+    cleaningOptions: String
   }
 
   type Query {
@@ -97,7 +114,7 @@ const typeDefs = (`
     signup(firstName: String!, lastName: String!, email: String!, password: String!, role: String!, location: LocationInput!): AuthPayload!
     login(email: String!, password: String!): AuthPayload!
     initializePayment(input: PaymentInput!): InitializeTransactionResponse
-    initializeSubscription(input: PaymentInput!): InitializeTransactionResponse
+    initializeSubscription(input: SubscriptionInput!): InitializeTransactionResponse
     verifyPaymentTransaction(reference: String!): Transaction
   }
 `);

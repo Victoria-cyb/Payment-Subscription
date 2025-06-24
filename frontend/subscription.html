@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription - WIPE AND SHINE</title>
+  <link rel="stylesheet" href="./style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+  <video autoplay muted loop playsinline id="background-video">
+    <source src="background-video.mp4" type="video/mp4">
+  </video>
+  <div class="overlay"></div>
+  <div class="content-wrapper">
+    <header>
+      <h1>WIPE AND SHINE CLEANING AGENCY</h1>
+      <div class="auth-container">
+        <span id="authStatus"></span>
+        <button id="logoutButton" class="btn btn-logout" style="display: none;">Logout</button>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="payment.html">One-Time Payment</a>
+      </nav>
+    </header>
+    <main>
+      <section class="form-container" id="subscriptionSection">
+        <h2>Start a Subscription</h2>
+        <form id="subscriptionDetailsForm">
+          <input type="text" id="houseAddress" placeholder="House Address (e.g., Lagos, Nigeria)" required>
+          <select id="houseType" required>
+            <option value="">Select House Type</option>
+            <option value="apartment">Apartment (₦30000 base)</option>
+            <option value="duplex">Duplex (₦80000 base)</option>
+            <option value="mansion">Mansion (₦150000 base)</option>
+          </select>
+          <select id="cleaningOptions" required>
+            <option value="">Select Cleaning Options</option>
+            <option value="basic">Basic Cleaning (+₦50000)</option>
+            <option value="deep">Deep Cleaning (+₦100,000)</option>
+            <option value="premium">Premium Cleaning (+₦150,000)</option>
+          </select>
+          <select id="subscriptionInterval" required>
+            <option value="">Select Interval</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="annually">Annually</option>
+          </select>
+          <p>Estimated Bill: <span id="estimatedBill">₦0</span></p>
+          <button type="submit" class="btn btn-primary pulse">Subscribe</button>
+        </form>
+      </section>
+      <div id="result" class="result-message"></div>
+    </main>
+  </div>
+  <script src="./script.js"></script>
+</body>
+</html>
