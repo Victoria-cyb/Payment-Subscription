@@ -12,6 +12,10 @@
       "dest": "/$1"
     },
     {
+     "src": "/(index|login|signup|subscription|payment)\\.html",
+      "dest": "/$1.html"
+    },
+    {
       "src": "/.*",
       "dest": "/index.html"
     }
