@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendPaymentNotification(transaction) {
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `"WIPE AND SHINE CLEANING AGENCY"${process.env.EMAIL_USER}`,
     to: process.env.ADMIN_EMAIL,
     subject: `New Payment: ${transaction.type} - Ref ${transaction.reference}`,
     html: `
